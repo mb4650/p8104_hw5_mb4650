@@ -24,6 +24,8 @@ options(
 
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
+
+set.seed(1)
 ```
 
 
@@ -137,3 +139,68 @@ path_df %>%
 From the graph, we see that overall, the observations appear to be relatively constant over time. However, for the experimental arm, the observations appear to be increasing over time. 
 
 # Problem 3
+
+Create function for simulation for when mu = 0.
+
+```{r, error = TRUE}
+sim_ttest_one = function(mu, n = 30, sd = 5) {
+  sim_data = 
+    tibble(
+      x = rnorm(n = n, mean =  mu, sd = sd)
+    )
+  
+  summary_df = 
+    sim_data %>%
+    summarize(
+      mean = mean(x),
+      sd = sd(x)
+    )
+  
+  ttest_results = 
+    summary_df %>%
+    t.test() %>%
+    broom::tidy() %>% 
+    select(estimate, p.value)
+}
+
+```
+
+Generate 5000 datasets
+
+```{r}
+sim_test_one_results = 
+  rerun(5000, sim_ttest_one(mu = 0)) %>%
+  bind_rows()
+```
+
+Use the above function for mu in 1:6.
+
+```{r}
+sim_ttest_six_results = 
+  tibble(
+    mu = c(1:6)
+  ) %>% 
+  mutate(
+    output_lists = map(.x = mu, ~ rerun(5000, sim_ttest_one(mu =.x))),
+    estimate_df = map(output_lists, bind_rows)
+  ) %>% 
+  select(-output_lists) %>% 
+  unnest(estimate_df)
+```
+
+Create new variable for rejected or not rejected.
+
+```{r}
+sim_data_final = 
+  sim_ttest_six_results %>%
+  mutate(
+    decision = case_when(
+      p.value <= 0.05 ~ "reject",
+      p.value > 0.05  ~ "fail to reject"
+    )
+  )
+```
+
+
+
+
