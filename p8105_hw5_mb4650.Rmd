@@ -224,7 +224,8 @@ avg_est =
   ) %>%
   ggplot(aes(x = mu, y = avg_estimate)) + 
   geom_point() +
-  labs(x = "True Mean", y = "Average mu_hat", title = "All samples")
+  labs(x = "True Mean", y = "Average mu_hat", title = "All samples") +
+  theme(title = element_text(size = 10))
 
 avg_est_rejected = 
   sim_data_final %>%
@@ -235,7 +236,8 @@ avg_est_rejected =
   ) %>%
   ggplot(aes(x = mu, y = avg_estimate_rej)) + 
   geom_point() +
-  labs(x = "True Mean", y = "Average mu_hat", title = "Samples where null was rejected")
+  labs(x = "True Mean", y = "Average mu_hat", title = "Samples where null was rejected") +
+  theme(title = element_text(size = 10))
 
 avg_est + avg_est_rejected
 
