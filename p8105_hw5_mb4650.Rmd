@@ -143,10 +143,10 @@ From the graph, we see that overall, the observations appear to be relatively co
 Create function for simulation for when mu = 0.
 
 ```{r, error = TRUE}
-sim_ttest_one = function(mu, n = 30, sd = 5) {
+sim_ttest = function(mu, n = 30, sd = 5) {
   sim_data = 
     tibble(
-      x = rnorm(n = 30, mean =  0, sd = 5)
+      x = rnorm(n = n, mean = mu, sd = sd)
     )
   
   ttest_results = 
@@ -162,7 +162,7 @@ Generate 5000 datasets.
 
 ```{r}
 sim_test_one_results = 
-  rerun(5000, sim_ttest_one(mu = 0)) %>%
+  rerun(5000, sim_ttest(mu = 0)) %>%
   bind_rows()
 ```
 
@@ -174,7 +174,7 @@ sim_ttest_six_results =
     mu = c(1:6)
   ) %>% 
   mutate(
-    output_lists = map(.x = mu, ~ rerun(5000, sim_ttest_one(mu =.x))),
+    output_lists = map(.x = mu, ~rerun(5000, sim_ttest(mu =.x))),
     estimate_df = map(output_lists, bind_rows)
   ) %>% 
   select(-output_lists) %>% 
@@ -194,6 +194,24 @@ sim_data_final =
   )
 ```
 
-Plot proportion of 
+Plot proportion of times the null was rejects by true value of mu.
+
+```{r}
+plot1 = 
+  sim_data_final %>%
+  group_by(mu) %>%
+  summarize(
+    prop_rej = (sum(decision == "reject"))/n()
+  ) 
+
+ggplot(data = plot1, aes(x = mu, y = prop_rej, )) + geom_bar(stat ="identity")
+ggplot(data = plot1, aes(x = mu, y = prop_rej )) + geom_point()
+  
+```
+
+From the graph we see that as the effect size gets larger (mu gets further from the null value of 0), the power increases rapidly and plateaus as it reaches 1.
+
+
+
 
 
