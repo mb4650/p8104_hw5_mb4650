@@ -8,6 +8,7 @@ This my solution to Homework 5!
 
 ```{r setup, include=FALSE}
 library(tidyverse)
+library(patchwork)
 
 knitr::opts_chunk$set(
   fig.width = 6,
@@ -212,6 +213,33 @@ ggplot(data = plot1, aes(x = mu, y = prop_rej )) + geom_point()
 From the graph we see that as the effect size gets larger (mu gets further from the null value of 0), the power increases rapidly and plateaus as it reaches 1.
 
 
+Plot average of the estimates by true value and average of estimates where null was rejected by true value.
 
+```{r}
+avg_est = 
+  sim_data_final %>%
+  group_by(mu) %>%
+  summarize(
+    avg_estimate = mean(estimate)
+  ) %>%
+  ggplot(aes(x = mu, y = avg_estimate)) + 
+  geom_point() +
+  labs(x = "True Mean", y = "Average mu_hat", title = "All samples")
 
+avg_est_rejected = 
+  sim_data_final %>%
+  filter(decision == "reject") %>%
+  group_by(mu) %>%
+  summarize(
+    avg_estimate_rej = mean(estimate)
+  ) %>%
+  ggplot(aes(x = mu, y = avg_estimate_rej)) + 
+  geom_point() +
+  labs(x = "True Mean", y = "Average mu_hat", title = "Samples where null was rejected")
+
+avg_est + avg_est_rejected
+
+```
+
+The sample average of mu hat across tests for which the null is rejected is approximately equal to the true value of mu, the further away mu is from the null value of mu = 0. This is because we are testing whether the average value from the dataset we created is or is not different from the null value, 0. When the true mu is close to the null and depending on the standard deviation, it is more likely that you will reject only when the average values for the dataset are more extreme or further from the true value, which is why the average of the estimates among those that were rejected is different than the true mu for when the true mu is equal to 1 and 2. However, as the true mu gets further away from the null value, we are more likely to reject for the average estimate when it is close to the true mu as it is different from the null value.
 
