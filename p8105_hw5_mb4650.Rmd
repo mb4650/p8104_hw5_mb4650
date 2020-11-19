@@ -94,6 +94,7 @@ results_df %>%
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 ```
 
+
 # Problem 2
 
 Import and tidy the data
@@ -137,7 +138,7 @@ path_df %>%
   facet_grid(. ~ treatment_arm)
 ```
 
-From the graph, we see that overall, the observations appear to be relatively constant over time. However, for the experimental arm, the observations appear to be increasing over time. 
+From the graph, we see that overall, the observations appear to be relatively constant over time for the control group. However, for the experimental arm, the observations appear to be increasing over time. 
 
 # Problem 3
 
@@ -205,12 +206,13 @@ plot1 =
     prop_rej = (sum(decision == "reject"))/n()
   ) 
 
-ggplot(data = plot1, aes(x = mu, y = prop_rej, )) + geom_bar(stat ="identity")
-ggplot(data = plot1, aes(x = mu, y = prop_rej )) + geom_point()
+ggplot(data = plot1, aes(x = mu, y = prop_rej )) + 
+  geom_point() +
+  labs(x = "True mu", y = "Power", title = "Proportion of times the null was rejected by true mu")
   
 ```
 
-From the graph we see that as the effect size gets larger (mu gets further from the null value of 0), the power increases rapidly and plateaus as it reaches 1.
+From the graph we see that as the effect size gets larger (true mu gets further from the null value of 0), the power increases rapidly and plateaus as it reaches 1.
 
 
 Plot average of the estimates by true value and average of estimates where null was rejected by true value.
@@ -243,5 +245,11 @@ avg_est + avg_est_rejected
 
 ```
 
-The sample average of mu hat across tests for which the null is rejected is approximately equal to the true value of mu, the further away mu is from the null value of mu = 0. This is because we are testing whether the average value from the dataset we created is or is not different from the null value, 0. When the true mu is close to the null and depending on the standard deviation, it is more likely that you will reject only when the average values for the dataset are more extreme or further from the true value, which is why the average of the estimates among those that were rejected is different than the true mu for when the true mu is equal to 1 and 2. However, as the true mu gets further away from the null value, we are more likely to reject for the average estimate when it is close to the true mu as it is different from the null value.
+The sample average of mu hat across tests for which the null is rejected is approximately equal to the true value of mu the further away the true mu is from the null value of mu = 0. 
+
+This is because we are testing whether the average value from the dataset we created is or is not different from the null value, 0. If the observed average value is significantly different from the null value, then we would reject the null hypothesis. 
+
+For each dataset, we are generating a random sample with the mean being the true mu and standard deviation equal to 5. From this random sample, we generate an estimated sample mean. When generated multiple times and given that CLT is satisfied since sample size is 30, the distribution of sample means will be normally distributed around the true mu we used to generate the sample. 
+
+When the true mu is close to the null and depending on the standard deviation, it is more likely that you will reject only when the estimates for the dataset are more extreme or further from the true value, which is why the average of the estimates among those that were rejected is different than the true mu for when the true mu is equal to 1, 2, and 3. However, as the true mu gets further away from the null value, we are more likely to reject for the average estimate when it is close to the true mu rather than the more extreme values, as the true mu itself is different from the null value.
 
